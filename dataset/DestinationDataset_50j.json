@@ -1,0 +1,23 @@
+{
+	"name": "DestinationDataset_50j",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureStorageLinkService",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "NewFile.csv",
+				"container": "destinationadftutorial"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

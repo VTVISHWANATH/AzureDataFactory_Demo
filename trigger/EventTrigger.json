@@ -1,0 +1,25 @@
+{
+	"name": "EventTrigger",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "CopyBookCSV",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/adftutorial/blobs/input/book/",
+			"blobPathEndsWith": "csv",
+			"ignoreEmptyBlobs": true,
+			"scope": "/subscriptions/56de373d-1f03-46aa-8e9c-3c985bf189a3/resourceGroups/ResourceGroup01/providers/Microsoft.Storage/storageAccounts/vishwanathstorageaccount",
+			"events": [
+				"Microsoft.Storage.BlobCreated"
+			]
+		}
+	}
+}

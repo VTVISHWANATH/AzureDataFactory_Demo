@@ -1,0 +1,103 @@
+{
+	"name": "FileCopypipeline_Dynamic_SQL",
+	"properties": {
+		"activities": [
+			{
+				"name": "CopyCSV",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "getParameters",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"preCopyScript": "truncate table dbo.empTable",
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "csvDataset",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "AzureSqlTable2",
+						"type": "DatasetReference",
+						"parameters": {
+							"dbname": {
+								"value": "@activity('getParameters').output.firstRow.DBName",
+								"type": "Expression"
+							},
+							"table": {
+								"value": "@activity('getParameters').output.firstRow.TableName",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "getParameters",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "Select 'empTable' as TableName, 'adfworkshop_prod' as DBName",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "ParameterDataset",
+						"type": "DatasetReference"
+					}
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2020-09-01T06:48:25Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
