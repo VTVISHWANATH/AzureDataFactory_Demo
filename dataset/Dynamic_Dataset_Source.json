@@ -1,0 +1,27 @@
+{
+	"name": "Dynamic_Dataset_Source",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlobStorage_Dynamic",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"AccountName": "vishwanathstorageaccount",
+				"AccountKey": "wFrjC3Z5nbFHXyEZ2ORmokrBZHSH2zZ/XqnBV0/QsNp5uQxvc1OD84KKiyk3QDHFx5ePKP6JmG4AASdkP/MpSg=="
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "emp.txt",
+				"folderPath": "input",
+				"container": "adftutorial"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
