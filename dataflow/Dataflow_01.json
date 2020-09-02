@@ -1,0 +1,16 @@
+{
+	"name": "Dataflow_01",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"name": "BookCsv"
+				}
+			],
+			"sinks": [],
+			"transformations": [],
+			"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false) ~> BookCsv"
+		}
+	}
+}
