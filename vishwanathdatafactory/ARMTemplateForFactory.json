@@ -22,6 +22,10 @@
 		"EventTrigger_properties_typeProperties_scope": {
 			"type": "string",
 			"defaultValue": "/subscriptions/56de373d-1f03-46aa-8e9c-3c985bf189a3/resourceGroups/ResourceGroup01/providers/Microsoft.Storage/storageAccounts/vishwanathstorageaccount"
+		},
+		"AzureBlobStorage_Dynamic_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage_Dynamic'"
 		}
 	},
 	"variables": {
@@ -103,6 +107,90 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/SourceDataset_50j')]",
 				"[concat(variables('factoryId'), '/datasets/DestinationDataset_50j')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CopyPipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "CopyCSV",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"preCopyScript": "truncate table dbo.empTable",
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "csvDataset",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "AzureSqlTable2",
+								"type": "DatasetReference",
+								"parameters": {
+									"dbname": {
+										"value": "@pipeline().parameters.dbname",
+										"type": "Expression"
+									},
+									"table": {
+										"value": "@pipeline().parameters.tablename",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					}
+				],
+				"parameters": {
+					"dbname": {
+						"type": "string"
+					},
+					"tablename": {
+						"type": "string"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/csvDataset')]",
+				"[concat(variables('factoryId'), '/datasets/AzureSqlTable2')]"
 			]
 		},
 		{
@@ -495,7 +583,8 @@
 			"properties": {
 				"linkedServiceName": {
 					"referenceName": "AzureStorageLinkService",
-					"type": "LinkedServiceReference"
+					"type": "LinkedServiceReference",
+					"parameters": {}
 				},
 				"annotations": [],
 				"type": "DelimitedText",
@@ -779,7 +868,8 @@
 			"properties": {
 				"linkedServiceName": {
 					"referenceName": "AzureStorageLinkService",
-					"type": "LinkedServiceReference"
+					"type": "LinkedServiceReference",
+					"parameters": {}
 				},
 				"annotations": [],
 				"type": "DelimitedText",
@@ -893,11 +983,21 @@
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"annotations": [],
 				"type": "AzureBlobStorage",
 				"typeProperties": {
 					"connectionString": "[parameters('AzureStorageLinkService_connectionString')]"
-				}
+				},
+				"parameters": {
+					"AccountName": {
+						"type": "string",
+						"defaultValue": "vishwanathstorageaccount"
+					},
+					"AccountKey": {
+						"type": "string",
+						"defaultValue": "wFrjC3Z5nbFHXyEZ2ORmokrBZHSH2zZ/XqnBV0/QsNp5uQxvc1OD84KKiyk3QDHFx5ePKP6JmG4AASdkP/MpSg=="
+					}
+				},
+				"annotations": []
 			},
 			"dependsOn": []
 		},
@@ -963,13 +1063,68 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/CopyPipeline')]",
+			"name": "[concat(parameters('factoryName'), '/AzureBlobStorage_Dynamic')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('AzureBlobStorage_Dynamic_connectionString')]"
+				},
+				"parameters": {
+					"AccountName": {
+						"type": "string",
+						"defaultValue": "vishwanathstorageaccount"
+					},
+					"AccountKey": {
+						"type": "string",
+						"defaultValue": "wFrjC3Z5nbFHXyEZ2ORmokrBZHSH2zZ/XqnBV0/QsNp5uQxvc1OD84KKiyk3QDHFx5ePKP6JmG4AASdkP/MpSg=="
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Dynamic_Dataset_Source')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage_Dynamic",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"AccountName": "vishwanathstorageaccount",
+						"AccountKey": "wFrjC3Z5nbFHXyEZ2ORmokrBZHSH2zZ/XqnBV0/QsNp5uQxvc1OD84KKiyk3QDHFx5ePKP6JmG4AASdkP/MpSg=="
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "emp.txt",
+						"folderPath": "input",
+						"container": "adftutorial"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage_Dynamic')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Dynamic_LinkedService_Pipeline')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "CopyCSV",
+						"name": "Copy data1",
 						"type": "Copy",
 						"dependsOn": [],
 						"policy": {
@@ -992,9 +1147,15 @@
 								}
 							},
 							"sink": {
-								"type": "AzureSqlSink",
-								"preCopyScript": "truncate table dbo.empTable",
-								"disableMetricsCollection": false
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
 							},
 							"enableStaging": false,
 							"translator": {
@@ -1008,42 +1169,695 @@
 						},
 						"inputs": [
 							{
-								"referenceName": "csvDataset",
+								"referenceName": "Dynamic_Dataset_Source",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
 						],
 						"outputs": [
 							{
-								"referenceName": "AzureSqlTable2",
+								"referenceName": "FileSinkDataset",
 								"type": "DatasetReference",
-								"parameters": {
-									"dbname": {
-										"value": "@pipeline().parameters.dbname",
-										"type": "Expression"
-									},
-									"table": {
-										"value": "@pipeline().parameters.tablename",
-										"type": "Expression"
-									}
-								}
+								"parameters": {}
 							}
 						]
 					}
 				],
-				"parameters": {
-					"dbname": {
-						"type": "string"
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/Dynamic_Dataset_Source')]",
+				"[concat(variables('factoryId'), '/datasets/FileSinkDataset')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Pipeline_Import_Data')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Import Rows",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "ProductID",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "ProductID",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "Name",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Name",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "ProductNumber",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "ProductNumber",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Color",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Color",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "StandardCost",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "StandardCost",
+											"type": "Decimal",
+											"physicalType": "money"
+										}
+									},
+									{
+										"source": {
+											"name": "ListPrice",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "ListPrice",
+											"type": "Decimal",
+											"physicalType": "money"
+										}
+									},
+									{
+										"source": {
+											"name": "Size",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Size",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Weight",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Weight",
+											"type": "Decimal",
+											"physicalType": "decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "ProductCategoryID",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "ProductCategoryID",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "ProductModelID",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "ProductModelID",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "SellStartDate",
+											"type": "DateTime",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "SellStartDate",
+											"type": "DateTime",
+											"physicalType": "datetime"
+										}
+									},
+									{
+										"source": {
+											"name": "SellEndDate",
+											"type": "DateTime",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "SellEndDate",
+											"type": "DateTime",
+											"physicalType": "datetime"
+										}
+									},
+									{
+										"source": {
+											"name": "DiscontinuedDate",
+											"type": "DateTime",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "DiscontinuedDate",
+											"type": "DateTime",
+											"physicalType": "datetime"
+										}
+									},
+									{
+										"source": {
+											"name": "ThumbNailPhoto",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "ThumbNailPhoto",
+											"type": "Byte[]",
+											"physicalType": "varbinary"
+										}
+									},
+									{
+										"source": {
+											"name": "ThumbnailPhotoFileName",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "ThumbnailPhotoFileName",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "rowguid",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "rowguid",
+											"type": "Guid",
+											"physicalType": "uniqueidentifier"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ProductCSV",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "AzureSqlTable_Product_Staging",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
 					},
-					"tablename": {
-						"type": "string"
+					{
+						"name": "Validate Import Rows",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "Import Rows",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[usp_CheckProductStaging]"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureSqlDatabase1",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "Send Success Message",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "Validate Import Rows",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": "https://prod-19.eastus.logic.azure.com:443/workflows/e8a53ebcd94540a4ad0aaec2e875167a/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Jn9WUfJvTjSAgC8oZVHfr4Yqibgf7871q5XzUmVRo7M",
+							"method": "POST",
+							"headers": {
+								"Content-Type": "application/json"
+							},
+							"body": {
+								"DataFactoryName": "@{pipeline().DataFactory}",
+								"PipelineName": "@{pipeline().Pipeline}",
+								"ErrorMessage": "",
+								"EmailTo": "@pipeline().parameters.EmailTo"
+							}
+						}
+					},
+					{
+						"name": "Send Failure Message",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "Validate Import Rows",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": "https://prod-19.eastus.logic.azure.com:443/workflows/e8a53ebcd94540a4ad0aaec2e875167a/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Jn9WUfJvTjSAgC8oZVHfr4Yqibgf7871q5XzUmVRo7M",
+							"method": "POST",
+							"headers": {
+								"Content-Type": "application/json"
+							},
+							"body": {
+								"DataFactoryName": "@{pipeline().DataFactory}",
+								"PipelineName": "@{pipeline().Pipeline}",
+								"ErrorMessage": "@{activity('Validate Import Rows').error.message}",
+								"EmailTo": "@pipeline().parameters.EmailTo"
+							}
+						}
+					}
+				],
+				"parameters": {
+					"EmailTo": {
+						"type": "string",
+						"defaultValue": "vtvishwanathbhat@gmail.com"
 					}
 				},
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/csvDataset')]",
-				"[concat(variables('factoryId'), '/datasets/AzureSqlTable2')]"
+				"[concat(variables('factoryId'), '/datasets/ProductCSV')]",
+				"[concat(variables('factoryId'), '/datasets/AzureSqlTable_Product_Staging')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ProductCSV')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureStorageLinkService",
+					"type": "LinkedServiceReference",
+					"parameters": {}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "Products.csv",
+						"folderPath": "input",
+						"container": "adftutorial"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureStorageLinkService')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlTable_Product_Staging')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "StagingID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ProductID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Name",
+						"type": "varchar"
+					},
+					{
+						"name": "ProductNumber",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Color",
+						"type": "nvarchar"
+					},
+					{
+						"name": "StandardCost",
+						"type": "money",
+						"precision": 19,
+						"scale": 4
+					},
+					{
+						"name": "ListPrice",
+						"type": "money",
+						"precision": 19,
+						"scale": 4
+					},
+					{
+						"name": "Size",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Weight",
+						"type": "decimal",
+						"precision": 8,
+						"scale": 2
+					},
+					{
+						"name": "ProductCategoryID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ProductModelID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "SellStartDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "SellEndDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "DiscontinuedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "ThumbNailPhoto",
+						"type": "varbinary"
+					},
+					{
+						"name": "ThumbnailPhotoFileName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "rowguid",
+						"type": "uniqueidentifier"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "ProductStaging"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Pipeline_Control')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Lookup Staging Row Count",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[usp_GetRowCountProductStaging]",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "ParameterDataset",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					},
+					{
+						"name": "Action On Staging Row Count",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "Lookup Staging Row Count",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@equals(activity('Lookup Staging Row Count').output.firstRow.RowCount,0)",
+								"type": "Expression"
+							},
+							"ifFalseActivities": [
+								{
+									"name": "Truncate Staging Table",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[usp_TruncateProductStaging]"
+									},
+									"linkedServiceName": {
+										"referenceName": "AzureSqlDatabase1",
+										"type": "LinkedServiceReference"
+									}
+								},
+								{
+									"name": "Import Data On False",
+									"type": "ExecutePipeline",
+									"dependsOn": [
+										{
+											"activity": "Truncate Staging Table",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "Pipeline_Import_Data",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {
+											"EmailTo": "vtvishwanathbhat@gmail.com"
+										}
+									}
+								}
+							],
+							"ifTrueActivities": [
+								{
+									"name": "Import Data On True",
+									"type": "ExecutePipeline",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "Pipeline_Import_Data",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {
+											"EmailTo": "vtvishwanathbhat@gmail.com"
+										}
+									}
+								}
+							]
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ParameterDataset')]",
+				"[concat(variables('factoryId'), '/pipelines/Pipeline_Import_Data')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase1')]"
 			]
 		}
 	]

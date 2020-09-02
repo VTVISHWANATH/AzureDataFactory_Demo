@@ -23,6 +23,10 @@
 			"type": "string",
 			"defaultValue": "/subscriptions/56de373d-1f03-46aa-8e9c-3c985bf189a3/resourceGroups/ResourceGroup01/providers/Microsoft.Storage/storageAccounts/vishwanathstorageaccount"
 		},
+		"AzureBlobStorage_Dynamic_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage_Dynamic'"
+		},
 		"containerUri": {
 			"type": "string",
 			"metadata": "URI to storage account containing linked ARM templates"
@@ -59,12 +63,35 @@
 					"AzureStorageLinkService_connectionString": {
 						"value": "[parameters('AzureStorageLinkService_connectionString')]"
 					},
+					"AzureBlobStorage_Dynamic_connectionString": {
+						"value": "[parameters('AzureBlobStorage_Dynamic_connectionString')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "vishwanathdatafactory_ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
 					"EventTrigger_properties_typeProperties_scope": {
 						"value": "[parameters('EventTrigger_properties_typeProperties_scope')]"
 					}
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'vishwanathdatafactory_ArmTemplate_0')]"
+			]
 		}
 	]
 }
