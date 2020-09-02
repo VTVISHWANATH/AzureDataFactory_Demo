@@ -2,7 +2,7 @@
 	"name": "AzureStorageLinkService",
 	"type": "Microsoft.DataFactory/factories/linkedservices",
 	"properties": {
-		"type": "AzureStorage",
+		"type": "AzureBlobStorage",
 		"typeProperties": {
 			"connectionString": "DefaultEndpointsProtocol=https;AccountName=@{linkedService().AccountName};AccountKey=@{linkedService().AccountKey}"
 		},
