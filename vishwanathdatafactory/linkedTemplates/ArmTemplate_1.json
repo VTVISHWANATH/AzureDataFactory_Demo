@@ -17,7 +17,161 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/FileCopypipeline_implicit_mapping')]",
+			"name": "[concat(parameters('factoryName'), '/csvDataset')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureStorageLinkService",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "empImplicit.csv",
+						"folderPath": "input",
+						"container": "adftutorial"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "ID",
+						"type": "String"
+					},
+					{
+						"name": "Name",
+						"type": "String"
+					},
+					{
+						"name": "Manager",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/csvDatasetExplicit')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureStorageLinkService",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "empexplicit.csv",
+						"folderPath": "input",
+						"container": "adftutorial"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "EID",
+						"type": "String"
+					},
+					{
+						"name": "ENAME",
+						"type": "String"
+					},
+					{
+						"name": "EMANAGER",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CopyBookCSV')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy_50j",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [
+							{
+								"name": "Source",
+								"value": "adftutorial/input/book/book_listing.csv"
+							},
+							{
+								"name": "Destination",
+								"value": "destinationadftutorial//"
+							}
+						],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings",
+									"skipLineCount": 0
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"validateDataConsistency": false
+						},
+						"inputs": [
+							{
+								"referenceName": "SourceDataset_50j",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "DestinationDataset_50j",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"annotations": [],
+				"lastPublishTime": "2020-08-31T07:51:54Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CopyPipeline')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -69,17 +223,35 @@
 						],
 						"outputs": [
 							{
-								"referenceName": "AzureSqlTable1",
+								"referenceName": "AzureSqlTable2",
 								"type": "DatasetReference",
-								"parameters": {}
+								"parameters": {
+									"dbname": {
+										"value": "@pipeline().parameters.dbname",
+										"type": "Expression"
+									},
+									"table": {
+										"value": "@pipeline().parameters.tablename",
+										"type": "Expression"
+									}
+								}
 							}
 						]
 					}
 				],
-				"annotations": [],
-				"lastPublishTime": "2020-09-01T04:55:47Z"
+				"parameters": {
+					"dbname": {
+						"type": "string"
+					},
+					"tablename": {
+						"type": "string"
+					}
+				},
+				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/csvDataset')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/Dynamic_LinkedService_Pipeline')]",
@@ -150,6 +322,243 @@
 				"annotations": []
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/FileCopyPipeline_Dynamic_Mapping')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink"
+							},
+							"enableStaging": false,
+							"translator": {
+								"value": "@json(variables('mapping'))",
+								"type": "Expression"
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "csvDatasetExplicit",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "AzureSqlTable1",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"variables": {
+					"mapping": {
+						"type": "String",
+						"defaultValue": "{   \"type\": \"TabularTranslator\",   \"mappings\": [       {        \"source\": { \"name\": \"EID\" },        \"sink\": { \"name\": \"ID\" }       },       {        \"source\": { \"name\": \"ENAME\" },        \"sink\": { \"name\": \"Name\" }       },       {        \"source\": { \"name\": \"EMANAGER\" },        \"sink\": { \"name\": \"Manager\" }       }] }"
+					}
+				},
+				"annotations": [],
+				"lastPublishTime": "2020-09-01T05:21:50Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/csvDatasetExplicit')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/FileCopyPipeline_Explicit_Manual')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "EID",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "ID",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "ENAME",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Name",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "EMANAGER",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Manager",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "csvDatasetExplicit",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "AzureSqlTable1",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"annotations": [],
+				"lastPublishTime": "2020-09-01T05:01:06Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/csvDatasetExplicit')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/FileCopypipeline_implicit_mapping')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "CopyCSV",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"preCopyScript": "truncate table dbo.empTable",
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "csvDataset",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "AzureSqlTable1",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"annotations": [],
+				"lastPublishTime": "2020-09-01T04:55:47Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/csvDataset')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/Pipeline_Import_Data')]",
@@ -507,6 +916,150 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/Dataflow_01')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "BooksCsv",
+								"type": "DatasetReference"
+							},
+							"name": "BookCsv"
+						},
+						{
+							"dataset": {
+								"referenceName": "Trixies_History",
+								"type": "DatasetReference"
+							},
+							"name": "TrixiesHistory"
+						},
+						{
+							"dataset": {
+								"referenceName": "Keikos_History",
+								"type": "DatasetReference"
+							},
+							"name": "KeikosHistory"
+						},
+						{
+							"dataset": {
+								"referenceName": "Minervas_History",
+								"type": "DatasetReference"
+							},
+							"name": "Minervashistory"
+						},
+						{
+							"dataset": {
+								"referenceName": "Svens_History",
+								"type": "DatasetReference"
+							},
+							"name": "SvensHistory"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ReaderBookInnerJoin",
+								"type": "DatasetReference"
+							},
+							"name": "ReaderBooksInnerJoin"
+						},
+						{
+							"dataset": {
+								"referenceName": "ReaderBookInnerJoin",
+								"type": "DatasetReference"
+							},
+							"name": "ReaderBooksOuterJoinSink"
+						}
+					],
+					"transformations": [
+						{
+							"name": "AddReaderNameK"
+						},
+						{
+							"name": "AddReaderNameT"
+						},
+						{
+							"name": "AddReaderNameM"
+						},
+						{
+							"name": "AddReaderNameS"
+						},
+						{
+							"name": "AllReader"
+						},
+						{
+							"name": "SortReadingHistory"
+						},
+						{
+							"name": "JoinReadersToBook"
+						},
+						{
+							"name": "RemoveDuplicates"
+						},
+						{
+							"name": "JoinreaderToBookOuter"
+						},
+						{
+							"name": "RemoveDuplicateColumnOuter"
+						}
+					],
+					"script": "source(output(\n\t\tBook_Id as integer '##0',\n\t\tISBN as string,\n\t\tISBN13 as string,\n\t\tTitle as string,\n\t\tAuthor as string,\n\t\t{Author_l-f} as string,\n\t\tAdditional_Authors as string,\n\t\tAverage_Rating as string,\n\t\tPublisher as string,\n\t\tBinding as string,\n\t\tNumber_of_Pages as integer '##0',\n\t\tYear_Published as integer '##0',\n\t\tOriginal_Publication_Year as integer '##0'\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> BookCsv\nsource(output(\n\t\tBook_Id as integer '##0',\n\t\tISBN as string,\n\t\tISBN13 as string,\n\t\tMy_Rating as integer '##0',\n\t\tDate_Read as date 'dd/MM/yyyy',\n\t\tDate_Added as date 'dd/MM/yyyy',\n\t\tBookshelves as string,\n\t\tExclusive_Shelf as string,\n\t\tMy_Review as string,\n\t\tSpoiler as boolean,\n\t\tPrivate_Notes as string,\n\t\tRead_Count as integer '##0',\n\t\tOriginal_Purchase_Date as date 'dd/MM/yyyy'\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> TrixiesHistory\nsource(output(\n\t\tBook_Id as integer '##0',\n\t\tISBN as string,\n\t\tISBN13 as string,\n\t\tMy_Rating as integer '##0',\n\t\tDate_Read as date 'dd/MM/yyyy',\n\t\tDate_Added as date 'dd/MM/yyyy',\n\t\tBookshelves as string,\n\t\tExclusive_Shelf as string,\n\t\tMy_Review as string,\n\t\tSpoiler as boolean,\n\t\tRead_Count as integer '##0',\n\t\tOriginal_Purchase_Date as date 'dd/MM/yyyy'\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> KeikosHistory\nsource(output(\n\t\tBook_Id as integer '##0',\n\t\tISBN as string,\n\t\tMy_Rating as integer '##0',\n\t\tDate_Read as date 'dd/MM/yyyy',\n\t\tDate_Added as date 'dd/MM/yyyy',\n\t\tBookshelves as string,\n\t\tExclusive_Shelf as string,\n\t\tMy_Review as string,\n\t\tSpoiler as boolean,\n\t\tPrivate_Notes as string,\n\t\tRead_Count as integer '##0',\n\t\tOriginal_Purchase_Date as date 'dd/MM/yyyy'\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> Minervashistory\nsource(output(\n\t\tBook_Id as integer '##0',\n\t\tISBN as string,\n\t\tISBN13 as string,\n\t\tMy_Rating as integer '##0',\n\t\tDate_Read as date 'dd/MM/yyyy',\n\t\tDate_Added as date 'dd/MM/yyyy',\n\t\tOriginal_Purchase_Date as date 'dd/MM/yyyy',\n\t\tSpoiler as boolean,\n\t\tBookshelves as string,\n\t\tExclusive_Shelf as string,\n\t\tPrivate_Notes as string,\n\t\tRead_Count as integer '##0',\n\t\tMy_Review as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> SvensHistory\nKeikosHistory derive(Reader = 'Keiko Brooks') ~> AddReaderNameK\nTrixiesHistory derive(Reader = 'Trixie Belden') ~> AddReaderNameT\nMinervashistory derive(Reader = 'Minerva Snape') ~> AddReaderNameM\nSvensHistory derive(Reader = 'Sven Dorjadt') ~> AddReaderNameS\nAddReaderNameT, AddReaderNameK, AddReaderNameM, AddReaderNameS union(byName: true)~> AllReader\nAllReader sort(asc(Book_Id, true)) ~> SortReadingHistory\nSortReadingHistory, BookCsv join(AllReader@Book_Id == BookCsv@Book_Id\n\t&& AllReader@ISBN == BookCsv@ISBN,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinReadersToBook\nJoinReadersToBook select(mapColumn(\n\t\tBook_Id = BookCsv@Book_Id,\n\t\tISBN = BookCsv@ISBN,\n\t\tISBN13 = BookCsv@ISBN13,\n\t\tMy_Rating,\n\t\tDate_Read,\n\t\tDate_Added,\n\t\tBookshelves,\n\t\tExclusive_Shelf,\n\t\tMy_Review,\n\t\tSpoiler,\n\t\tPrivate_Notes,\n\t\tRead_Count,\n\t\tOriginal_Purchase_Date,\n\t\tReader,\n\t\tTitle,\n\t\tAuthor,\n\t\t{Author_l-f},\n\t\tAdditional_Authors,\n\t\tAverage_Rating,\n\t\tPublisher,\n\t\tBinding,\n\t\tNumber_of_Pages,\n\t\tYear_Published,\n\t\tOriginal_Publication_Year\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> RemoveDuplicates\nBookCsv, SortReadingHistory join(BookCsv@Book_Id == AllReader@Book_Id\n\t&& BookCsv@ISBN == AllReader@ISBN,\n\tjoinType:'right',\n\tbroadcast: 'auto')~> JoinreaderToBookOuter\nJoinreaderToBookOuter select(mapColumn(\n\t\tBook_Id = AllReader@Book_Id,\n\t\tISBN = AllReader@ISBN,\n\t\tISBN13 = AllReader@ISBN13,\n\t\tTitle,\n\t\tAuthor,\n\t\t{Author_l-f},\n\t\tAdditional_Authors,\n\t\tAverage_Rating,\n\t\tPublisher,\n\t\tBinding,\n\t\tNumber_of_Pages,\n\t\tYear_Published,\n\t\tOriginal_Publication_Year,\n\t\tMy_Rating,\n\t\tDate_Read,\n\t\tDate_Added,\n\t\tBookshelves,\n\t\tExclusive_Shelf,\n\t\tMy_Review,\n\t\tSpoiler,\n\t\tPrivate_Notes,\n\t\tRead_Count,\n\t\tOriginal_Purchase_Date,\n\t\tReader\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> RemoveDuplicateColumnOuter\nRemoveDuplicates sink(input(\n\t\t{770565} as string,\n\t\t{The One Minute Manager Meets the Monkey} as string,\n\t\t{Kenneth H. Blanchard} as string,\n\t\t{Blanchard, Kenneth H.} as string,\n\t\t{William Oncken Jr.} as string,\n\t\t{0688103804} as string,\n\t\t{9780688103804} as string,\n\t\t{07} as string,\n\t\t{4.04} as string,\n\t\t{William Morrow Paperbacks} as string,\n\t\tPaperback as string,\n\t\t{137} as string,\n\t\t{198912} as string,\n\t\t{198913} as string,\n\t\tProp_14 as string,\n\t\t{26/08/2019} as string,\n\t\tpaperback as string,\n\t\t{paperback (#543)} as string,\n\t\tread as string,\n\t\tProp_19 as string,\n\t\t{020} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['InnerJoinDataset.csv'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ReaderBooksInnerJoin\nRemoveDuplicateColumnOuter sink(input(\n\t\t{770565} as string,\n\t\t{The One Minute Manager Meets the Monkey} as string,\n\t\t{Kenneth H. Blanchard} as string,\n\t\t{Blanchard, Kenneth H.} as string,\n\t\t{William Oncken Jr.} as string,\n\t\t{0688103804} as string,\n\t\t{9780688103804} as string,\n\t\t{07} as string,\n\t\t{4.04} as string,\n\t\t{William Morrow Paperbacks} as string,\n\t\tPaperback as string,\n\t\t{137} as string,\n\t\t{198912} as string,\n\t\t{198913} as string,\n\t\tProp_14 as string,\n\t\t{26/08/2019} as string,\n\t\tpaperback as string,\n\t\t{paperback (#543)} as string,\n\t\tread as string,\n\t\tProp_19 as string,\n\t\t{020} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['ReadersBookOuterJoin.csv'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ReaderBooksOuterJoinSink"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DataFlowPipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "RunDataFlow",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "Dataflow_01",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"BookCsv": {},
+									"TrixiesHistory": {},
+									"KeikosHistory": {},
+									"Minervashistory": {},
+									"SvensHistory": {},
+									"ReaderBooksInnerJoin": {},
+									"ReaderBooksOuterJoinSink": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							}
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/Dataflow_01')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/FileCopypipeline_Dynamic_SQL')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -572,65 +1125,8 @@
 				"annotations": [],
 				"lastPublishTime": "2020-09-01T06:48:25Z"
 			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/EventTrigger')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Started",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "CopyBookCSV",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "BlobEventsTrigger",
-				"typeProperties": {
-					"blobPathBeginsWith": "/adftutorial/blobs/input/book/",
-					"blobPathEndsWith": "csv",
-					"ignoreEmptyBlobs": true,
-					"scope": "[parameters('EventTrigger_properties_typeProperties_scope')]",
-					"events": [
-						"Microsoft.Storage.BlobCreated"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/TimeTrigger')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Started",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "FileCopypipeline_implicit_mapping",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Minute",
-						"interval": 1,
-						"startTime": "2020-08-31T08:35:00Z",
-						"timeZone": "UTC"
-					}
-				}
-			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/FileCopypipeline_implicit_mapping')]"
+				"[concat(variables('factoryId'), '/pipelines/CopyPipeline')]"
 			]
 		},
 		{
@@ -752,6 +1248,67 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/Pipeline_Import_Data')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/EventTrigger')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "CopyBookCSV",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "BlobEventsTrigger",
+				"typeProperties": {
+					"blobPathBeginsWith": "/adftutorial/blobs/input/book/",
+					"blobPathEndsWith": "csv",
+					"ignoreEmptyBlobs": true,
+					"scope": "[parameters('EventTrigger_properties_typeProperties_scope')]",
+					"events": [
+						"Microsoft.Storage.BlobCreated"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/CopyBookCSV')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/TimeTrigger')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "FileCopypipeline_implicit_mapping",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Minute",
+						"interval": 1,
+						"startTime": "2020-08-31T08:35:00Z",
+						"timeZone": "UTC"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/FileCopypipeline_implicit_mapping')]"
 			]
 		}
 	]
