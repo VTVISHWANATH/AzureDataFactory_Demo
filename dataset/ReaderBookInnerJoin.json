@@ -1,0 +1,107 @@
+{
+	"name": "ReaderBookInnerJoin",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureStorageLinkService",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"container": "destinationadftutorial"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "770565",
+				"type": "String"
+			},
+			{
+				"name": "The One Minute Manager Meets the Monkey",
+				"type": "String"
+			},
+			{
+				"name": "Kenneth H. Blanchard",
+				"type": "String"
+			},
+			{
+				"name": "Blanchard, Kenneth H.",
+				"type": "String"
+			},
+			{
+				"name": "William Oncken Jr.",
+				"type": "String"
+			},
+			{
+				"name": "0688103804",
+				"type": "String"
+			},
+			{
+				"name": "9780688103804",
+				"type": "String"
+			},
+			{
+				"name": "07",
+				"type": "String"
+			},
+			{
+				"name": "4.04",
+				"type": "String"
+			},
+			{
+				"name": "William Morrow Paperbacks",
+				"type": "String"
+			},
+			{
+				"name": "Paperback",
+				"type": "String"
+			},
+			{
+				"name": "137",
+				"type": "String"
+			},
+			{
+				"name": "198912",
+				"type": "String"
+			},
+			{
+				"name": "198913",
+				"type": "String"
+			},
+			{
+				"name": "Prop_14",
+				"type": "String"
+			},
+			{
+				"name": "26/08/2019",
+				"type": "String"
+			},
+			{
+				"name": "paperback",
+				"type": "String"
+			},
+			{
+				"name": "paperback (#543)",
+				"type": "String"
+			},
+			{
+				"name": "read",
+				"type": "String"
+			},
+			{
+				"name": "Prop_19",
+				"type": "String"
+			},
+			{
+				"name": "020",
+				"type": "String"
+			}
+		]
+	}
+}
