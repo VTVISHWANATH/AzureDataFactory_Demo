@@ -17,6 +17,305 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/SourceDataset_50j')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureStorageLinkService",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "book_listing.csv",
+						"folderPath": "input/book",
+						"container": "adftutorial"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Book Id",
+						"type": "String"
+					},
+					{
+						"name": "Title",
+						"type": "String"
+					},
+					{
+						"name": "Author",
+						"type": "String"
+					},
+					{
+						"name": "Author l-f",
+						"type": "String"
+					},
+					{
+						"name": "Additional Authors",
+						"type": "String"
+					},
+					{
+						"name": "ISBN",
+						"type": "String"
+					},
+					{
+						"name": "ISBN13",
+						"type": "String"
+					},
+					{
+						"name": "My Rating",
+						"type": "String"
+					},
+					{
+						"name": "Average Rating",
+						"type": "String"
+					},
+					{
+						"name": "Publisher",
+						"type": "String"
+					},
+					{
+						"name": "Binding",
+						"type": "String"
+					},
+					{
+						"name": "Number of Pages",
+						"type": "String"
+					},
+					{
+						"name": "Year Published",
+						"type": "String"
+					},
+					{
+						"name": "Original Publication Year",
+						"type": "String"
+					},
+					{
+						"name": "Date Read",
+						"type": "String"
+					},
+					{
+						"name": "Date Added",
+						"type": "String"
+					},
+					{
+						"name": "Bookshelves",
+						"type": "String"
+					},
+					{
+						"name": "Bookshelves with positions",
+						"type": "String"
+					},
+					{
+						"name": "Exclusive Shelf",
+						"type": "String"
+					},
+					{
+						"name": "My Review",
+						"type": "String"
+					},
+					{
+						"name": "Read Count",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SourceDataset_t8e')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Publicdataset",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "crime-data-2016",
+						"container": "training"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Svens_History')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureStorageLinkService",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "books"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "Svens_History.csv",
+						"folderPath": "input/books",
+						"container": "adftutorial"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Book_Id",
+						"type": "String"
+					},
+					{
+						"name": "ISBN",
+						"type": "String"
+					},
+					{
+						"name": "ISBN13",
+						"type": "String"
+					},
+					{
+						"name": "My_Rating",
+						"type": "String"
+					},
+					{
+						"name": "Date_Read",
+						"type": "String"
+					},
+					{
+						"name": "Date_Added",
+						"type": "String"
+					},
+					{
+						"name": "Original_Purchase_Date",
+						"type": "String"
+					},
+					{
+						"name": "Spoiler",
+						"type": "String"
+					},
+					{
+						"name": "Bookshelves",
+						"type": "String"
+					},
+					{
+						"name": "Exclusive_Shelf",
+						"type": "String"
+					},
+					{
+						"name": "Private_Notes",
+						"type": "String"
+					},
+					{
+						"name": "Read_Count",
+						"type": "String"
+					},
+					{
+						"name": "My_Review",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Trixies_History')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureStorageLinkService",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "books"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "Trixies_History.csv",
+						"folderPath": "input/books",
+						"container": "adftutorial"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Book_Id",
+						"type": "String"
+					},
+					{
+						"name": "ISBN",
+						"type": "String"
+					},
+					{
+						"name": "ISBN13",
+						"type": "String"
+					},
+					{
+						"name": "My_Rating",
+						"type": "String"
+					},
+					{
+						"name": "Date_Read",
+						"type": "String"
+					},
+					{
+						"name": "Date_Added",
+						"type": "String"
+					},
+					{
+						"name": "Bookshelves",
+						"type": "String"
+					},
+					{
+						"name": "Exclusive_Shelf",
+						"type": "String"
+					},
+					{
+						"name": "My_Review",
+						"type": "String"
+					},
+					{
+						"name": "Spoiler",
+						"type": "String"
+					},
+					{
+						"name": "Private_Notes",
+						"type": "String"
+					},
+					{
+						"name": "Read_Count",
+						"type": "String"
+					},
+					{
+						"name": "Original_Purchase_Date",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/csvDataset')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -168,7 +467,9 @@
 				"annotations": [],
 				"lastPublishTime": "2020-08-31T07:51:54Z"
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/SourceDataset_50j')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/CopyPipeline')]",
@@ -558,6 +859,81 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/csvDataset')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Labpipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy_t8e",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [
+							{
+								"name": "Source",
+								"value": "training/crime-data-2016/"
+							},
+							{
+								"name": "Destination",
+								"value": "dwtemp/03.02/"
+							}
+						],
+						"typeProperties": {
+							"source": {
+								"type": "BinarySource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"wildcardFileName": "*"
+								},
+								"formatSettings": {
+									"type": "BinaryReadSettings"
+								}
+							},
+							"sink": {
+								"type": "BinarySink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings",
+									"copyBehavior": "PreserveHierarchy"
+								}
+							},
+							"enableStaging": false,
+							"enableSkipIncompatibleRow": false,
+							"skipErrorFile": {
+								"fileMissing": true
+							},
+							"validateDataConsistency": false
+						},
+						"inputs": [
+							{
+								"referenceName": "SourceDataset_t8e",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "DestinationDataset_t8e",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/SourceDataset_t8e')]"
 			]
 		},
 		{
@@ -1010,7 +1386,10 @@
 					"script": "source(output(\n\t\tBook_Id as integer '##0',\n\t\tISBN as string,\n\t\tISBN13 as string,\n\t\tTitle as string,\n\t\tAuthor as string,\n\t\t{Author_l-f} as string,\n\t\tAdditional_Authors as string,\n\t\tAverage_Rating as string,\n\t\tPublisher as string,\n\t\tBinding as string,\n\t\tNumber_of_Pages as integer '##0',\n\t\tYear_Published as integer '##0',\n\t\tOriginal_Publication_Year as integer '##0'\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> BookCsv\nsource(output(\n\t\tBook_Id as integer '##0',\n\t\tISBN as string,\n\t\tISBN13 as string,\n\t\tMy_Rating as integer '##0',\n\t\tDate_Read as date 'dd/MM/yyyy',\n\t\tDate_Added as date 'dd/MM/yyyy',\n\t\tBookshelves as string,\n\t\tExclusive_Shelf as string,\n\t\tMy_Review as string,\n\t\tSpoiler as boolean,\n\t\tPrivate_Notes as string,\n\t\tRead_Count as integer '##0',\n\t\tOriginal_Purchase_Date as date 'dd/MM/yyyy'\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> TrixiesHistory\nsource(output(\n\t\tBook_Id as integer '##0',\n\t\tISBN as string,\n\t\tISBN13 as string,\n\t\tMy_Rating as integer '##0',\n\t\tDate_Read as date 'dd/MM/yyyy',\n\t\tDate_Added as date 'dd/MM/yyyy',\n\t\tBookshelves as string,\n\t\tExclusive_Shelf as string,\n\t\tMy_Review as string,\n\t\tSpoiler as boolean,\n\t\tRead_Count as integer '##0',\n\t\tOriginal_Purchase_Date as date 'dd/MM/yyyy'\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> KeikosHistory\nsource(output(\n\t\tBook_Id as integer '##0',\n\t\tISBN as string,\n\t\tMy_Rating as integer '##0',\n\t\tDate_Read as date 'dd/MM/yyyy',\n\t\tDate_Added as date 'dd/MM/yyyy',\n\t\tBookshelves as string,\n\t\tExclusive_Shelf as string,\n\t\tMy_Review as string,\n\t\tSpoiler as boolean,\n\t\tPrivate_Notes as string,\n\t\tRead_Count as integer '##0',\n\t\tOriginal_Purchase_Date as date 'dd/MM/yyyy'\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> Minervashistory\nsource(output(\n\t\tBook_Id as integer '##0',\n\t\tISBN as string,\n\t\tISBN13 as string,\n\t\tMy_Rating as integer '##0',\n\t\tDate_Read as date 'dd/MM/yyyy',\n\t\tDate_Added as date 'dd/MM/yyyy',\n\t\tOriginal_Purchase_Date as date 'dd/MM/yyyy',\n\t\tSpoiler as boolean,\n\t\tBookshelves as string,\n\t\tExclusive_Shelf as string,\n\t\tPrivate_Notes as string,\n\t\tRead_Count as integer '##0',\n\t\tMy_Review as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> SvensHistory\nKeikosHistory derive(Reader = 'Keiko Brooks') ~> AddReaderNameK\nTrixiesHistory derive(Reader = 'Trixie Belden') ~> AddReaderNameT\nMinervashistory derive(Reader = 'Minerva Snape') ~> AddReaderNameM\nSvensHistory derive(Reader = 'Sven Dorjadt') ~> AddReaderNameS\nAddReaderNameT, AddReaderNameK, AddReaderNameM, AddReaderNameS union(byName: true)~> AllReader\nAllReader sort(asc(Book_Id, true)) ~> SortReadingHistory\nSortReadingHistory, BookCsv join(AllReader@Book_Id == BookCsv@Book_Id\n\t&& AllReader@ISBN == BookCsv@ISBN,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinReadersToBook\nJoinReadersToBook select(mapColumn(\n\t\tBook_Id = BookCsv@Book_Id,\n\t\tISBN = BookCsv@ISBN,\n\t\tISBN13 = BookCsv@ISBN13,\n\t\tMy_Rating,\n\t\tDate_Read,\n\t\tDate_Added,\n\t\tBookshelves,\n\t\tExclusive_Shelf,\n\t\tMy_Review,\n\t\tSpoiler,\n\t\tPrivate_Notes,\n\t\tRead_Count,\n\t\tOriginal_Purchase_Date,\n\t\tReader,\n\t\tTitle,\n\t\tAuthor,\n\t\t{Author_l-f},\n\t\tAdditional_Authors,\n\t\tAverage_Rating,\n\t\tPublisher,\n\t\tBinding,\n\t\tNumber_of_Pages,\n\t\tYear_Published,\n\t\tOriginal_Publication_Year\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> RemoveDuplicates\nBookCsv, SortReadingHistory join(BookCsv@Book_Id == AllReader@Book_Id\n\t&& BookCsv@ISBN == AllReader@ISBN,\n\tjoinType:'right',\n\tbroadcast: 'auto')~> JoinreaderToBookOuter\nJoinreaderToBookOuter select(mapColumn(\n\t\tBook_Id = AllReader@Book_Id,\n\t\tISBN = AllReader@ISBN,\n\t\tISBN13 = AllReader@ISBN13,\n\t\tTitle,\n\t\tAuthor,\n\t\t{Author_l-f},\n\t\tAdditional_Authors,\n\t\tAverage_Rating,\n\t\tPublisher,\n\t\tBinding,\n\t\tNumber_of_Pages,\n\t\tYear_Published,\n\t\tOriginal_Publication_Year,\n\t\tMy_Rating,\n\t\tDate_Read,\n\t\tDate_Added,\n\t\tBookshelves,\n\t\tExclusive_Shelf,\n\t\tMy_Review,\n\t\tSpoiler,\n\t\tPrivate_Notes,\n\t\tRead_Count,\n\t\tOriginal_Purchase_Date,\n\t\tReader\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> RemoveDuplicateColumnOuter\nRemoveDuplicates sink(input(\n\t\t{770565} as string,\n\t\t{The One Minute Manager Meets the Monkey} as string,\n\t\t{Kenneth H. Blanchard} as string,\n\t\t{Blanchard, Kenneth H.} as string,\n\t\t{William Oncken Jr.} as string,\n\t\t{0688103804} as string,\n\t\t{9780688103804} as string,\n\t\t{07} as string,\n\t\t{4.04} as string,\n\t\t{William Morrow Paperbacks} as string,\n\t\tPaperback as string,\n\t\t{137} as string,\n\t\t{198912} as string,\n\t\t{198913} as string,\n\t\tProp_14 as string,\n\t\t{26/08/2019} as string,\n\t\tpaperback as string,\n\t\t{paperback (#543)} as string,\n\t\tread as string,\n\t\tProp_19 as string,\n\t\t{020} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['InnerJoinDataset.csv'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ReaderBooksInnerJoin\nRemoveDuplicateColumnOuter sink(input(\n\t\t{770565} as string,\n\t\t{The One Minute Manager Meets the Monkey} as string,\n\t\t{Kenneth H. Blanchard} as string,\n\t\t{Blanchard, Kenneth H.} as string,\n\t\t{William Oncken Jr.} as string,\n\t\t{0688103804} as string,\n\t\t{9780688103804} as string,\n\t\t{07} as string,\n\t\t{4.04} as string,\n\t\t{William Morrow Paperbacks} as string,\n\t\tPaperback as string,\n\t\t{137} as string,\n\t\t{198912} as string,\n\t\t{198913} as string,\n\t\tProp_14 as string,\n\t\t{26/08/2019} as string,\n\t\tpaperback as string,\n\t\t{paperback (#543)} as string,\n\t\tread as string,\n\t\tProp_19 as string,\n\t\t{020} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['ReadersBookOuterJoin.csv'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ReaderBooksOuterJoinSink"
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/Trixies_History')]",
+				"[concat(variables('factoryId'), '/datasets/Svens_History')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/DataFlowPipeline')]",

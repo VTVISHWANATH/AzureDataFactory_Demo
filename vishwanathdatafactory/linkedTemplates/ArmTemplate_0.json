@@ -15,6 +15,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AzureSqlDatabase2'"
 		},
+		"DestinationContainer_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'DestinationContainer'"
+		},
 		"AzureBlobStorage_Dynamic_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage_Dynamic'"
@@ -22,6 +26,10 @@
 		"AzureStorageLinkService_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AzureStorageLinkService'"
+		},
+		"Publicdataset_sasUri": {
+			"type": "secureString",
+			"metadata": "Secure string for 'sasUri' of 'Publicdataset'"
 		}
 	},
 	"variables": {
@@ -103,6 +111,32 @@
 					}
 				},
 				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DestinationContainer')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('DestinationContainer_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Publicdataset')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"sasUri": "[parameters('Publicdataset_sasUri')]"
+				}
 			},
 			"dependsOn": []
 		},
@@ -394,6 +428,29 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/AzureStorageLinkService')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DestinationDataset_t8e')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "DestinationContainer",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "03.02",
+						"container": "dwtemp"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/DestinationContainer')]"
 			]
 		},
 		{
@@ -918,290 +975,6 @@
 					},
 					{
 						"name": "020",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureStorageLinkService')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SourceDataset_50j')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureStorageLinkService",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "book_listing.csv",
-						"folderPath": "input/book",
-						"container": "adftutorial"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "Book Id",
-						"type": "String"
-					},
-					{
-						"name": "Title",
-						"type": "String"
-					},
-					{
-						"name": "Author",
-						"type": "String"
-					},
-					{
-						"name": "Author l-f",
-						"type": "String"
-					},
-					{
-						"name": "Additional Authors",
-						"type": "String"
-					},
-					{
-						"name": "ISBN",
-						"type": "String"
-					},
-					{
-						"name": "ISBN13",
-						"type": "String"
-					},
-					{
-						"name": "My Rating",
-						"type": "String"
-					},
-					{
-						"name": "Average Rating",
-						"type": "String"
-					},
-					{
-						"name": "Publisher",
-						"type": "String"
-					},
-					{
-						"name": "Binding",
-						"type": "String"
-					},
-					{
-						"name": "Number of Pages",
-						"type": "String"
-					},
-					{
-						"name": "Year Published",
-						"type": "String"
-					},
-					{
-						"name": "Original Publication Year",
-						"type": "String"
-					},
-					{
-						"name": "Date Read",
-						"type": "String"
-					},
-					{
-						"name": "Date Added",
-						"type": "String"
-					},
-					{
-						"name": "Bookshelves",
-						"type": "String"
-					},
-					{
-						"name": "Bookshelves with positions",
-						"type": "String"
-					},
-					{
-						"name": "Exclusive Shelf",
-						"type": "String"
-					},
-					{
-						"name": "My Review",
-						"type": "String"
-					},
-					{
-						"name": "Read Count",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureStorageLinkService')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Svens_History')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureStorageLinkService",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "books"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "Svens_History.csv",
-						"folderPath": "input/books",
-						"container": "adftutorial"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "Book_Id",
-						"type": "String"
-					},
-					{
-						"name": "ISBN",
-						"type": "String"
-					},
-					{
-						"name": "ISBN13",
-						"type": "String"
-					},
-					{
-						"name": "My_Rating",
-						"type": "String"
-					},
-					{
-						"name": "Date_Read",
-						"type": "String"
-					},
-					{
-						"name": "Date_Added",
-						"type": "String"
-					},
-					{
-						"name": "Original_Purchase_Date",
-						"type": "String"
-					},
-					{
-						"name": "Spoiler",
-						"type": "String"
-					},
-					{
-						"name": "Bookshelves",
-						"type": "String"
-					},
-					{
-						"name": "Exclusive_Shelf",
-						"type": "String"
-					},
-					{
-						"name": "Private_Notes",
-						"type": "String"
-					},
-					{
-						"name": "Read_Count",
-						"type": "String"
-					},
-					{
-						"name": "My_Review",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureStorageLinkService')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Trixies_History')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureStorageLinkService",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "books"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "Trixies_History.csv",
-						"folderPath": "input/books",
-						"container": "adftutorial"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "Book_Id",
-						"type": "String"
-					},
-					{
-						"name": "ISBN",
-						"type": "String"
-					},
-					{
-						"name": "ISBN13",
-						"type": "String"
-					},
-					{
-						"name": "My_Rating",
-						"type": "String"
-					},
-					{
-						"name": "Date_Read",
-						"type": "String"
-					},
-					{
-						"name": "Date_Added",
-						"type": "String"
-					},
-					{
-						"name": "Bookshelves",
-						"type": "String"
-					},
-					{
-						"name": "Exclusive_Shelf",
-						"type": "String"
-					},
-					{
-						"name": "My_Review",
-						"type": "String"
-					},
-					{
-						"name": "Spoiler",
-						"type": "String"
-					},
-					{
-						"name": "Private_Notes",
-						"type": "String"
-					},
-					{
-						"name": "Read_Count",
-						"type": "String"
-					},
-					{
-						"name": "Original_Purchase_Date",
 						"type": "String"
 					}
 				]

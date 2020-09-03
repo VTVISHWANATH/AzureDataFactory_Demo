@@ -15,6 +15,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AzureSqlDatabase2'"
 		},
+		"DestinationContainer_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'DestinationContainer'"
+		},
 		"AzureBlobStorage_Dynamic_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage_Dynamic'"
@@ -22,6 +26,10 @@
 		"AzureStorageLinkService_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AzureStorageLinkService'"
+		},
+		"Publicdataset_sasUri": {
+			"type": "secureString",
+			"metadata": "Secure string for 'sasUri' of 'Publicdataset'"
 		},
 		"EventTrigger_properties_typeProperties_scope": {
 			"type": "string",
@@ -60,11 +68,17 @@
 					"AzureSqlDatabase2_connectionString": {
 						"value": "[parameters('AzureSqlDatabase2_connectionString')]"
 					},
+					"DestinationContainer_connectionString": {
+						"value": "[parameters('DestinationContainer_connectionString')]"
+					},
 					"AzureBlobStorage_Dynamic_connectionString": {
 						"value": "[parameters('AzureBlobStorage_Dynamic_connectionString')]"
 					},
 					"AzureStorageLinkService_connectionString": {
 						"value": "[parameters('AzureStorageLinkService_connectionString')]"
+					},
+					"Publicdataset_sasUri": {
+						"value": "[parameters('Publicdataset_sasUri')]"
 					}
 				}
 			},

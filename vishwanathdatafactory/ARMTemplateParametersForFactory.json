@@ -11,10 +11,16 @@
 		"AzureSqlDatabase2_connectionString": {
 			"value": ""
 		},
+		"DestinationContainer_connectionString": {
+			"value": ""
+		},
 		"AzureBlobStorage_Dynamic_connectionString": {
 			"value": ""
 		},
 		"AzureStorageLinkService_connectionString": {
+			"value": ""
+		},
+		"Publicdataset_sasUri": {
 			"value": ""
 		},
 		"EventTrigger_properties_typeProperties_scope": {
