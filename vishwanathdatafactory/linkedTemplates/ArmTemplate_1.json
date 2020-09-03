@@ -17,6 +17,116 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/ReaderBookInnerJoin')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureStorageLinkService",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"container": "destinationadftutorial"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "770565",
+						"type": "String"
+					},
+					{
+						"name": "The One Minute Manager Meets the Monkey",
+						"type": "String"
+					},
+					{
+						"name": "Kenneth H. Blanchard",
+						"type": "String"
+					},
+					{
+						"name": "Blanchard, Kenneth H.",
+						"type": "String"
+					},
+					{
+						"name": "William Oncken Jr.",
+						"type": "String"
+					},
+					{
+						"name": "0688103804",
+						"type": "String"
+					},
+					{
+						"name": "9780688103804",
+						"type": "String"
+					},
+					{
+						"name": "07",
+						"type": "String"
+					},
+					{
+						"name": "4.04",
+						"type": "String"
+					},
+					{
+						"name": "William Morrow Paperbacks",
+						"type": "String"
+					},
+					{
+						"name": "Paperback",
+						"type": "String"
+					},
+					{
+						"name": "137",
+						"type": "String"
+					},
+					{
+						"name": "198912",
+						"type": "String"
+					},
+					{
+						"name": "198913",
+						"type": "String"
+					},
+					{
+						"name": "Prop_14",
+						"type": "String"
+					},
+					{
+						"name": "26/08/2019",
+						"type": "String"
+					},
+					{
+						"name": "paperback",
+						"type": "String"
+					},
+					{
+						"name": "paperback (#543)",
+						"type": "String"
+					},
+					{
+						"name": "read",
+						"type": "String"
+					},
+					{
+						"name": "Prop_19",
+						"type": "String"
+					},
+					{
+						"name": "020",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/SourceDataset_50j')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -928,6 +1038,38 @@
 								"parameters": {}
 							}
 						]
+					},
+					{
+						"name": "Notebook1",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "Copy_t8e",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/vtvishwanathbhat@gmail.com/03-Data-Ingestion-Via-ADF/includes/Databricks-Data-Transformations",
+							"baseParameters": {
+								"accountName": "vishwanathstorageaccount",
+								"accountKey": "wFrjC3Z5nbFHXyEZ2ORmokrBZHSH2zZ/XqnBV0/QsNp5uQxvc1OD84KKiyk3QDHFx5ePKP6JmG4AASdkP/MpSg==",
+								"containerName": "dwtemp"
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricksLinkedService",
+							"type": "LinkedServiceReference"
+						}
 					}
 				],
 				"annotations": []
@@ -1388,7 +1530,8 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/Trixies_History')]",
-				"[concat(variables('factoryId'), '/datasets/Svens_History')]"
+				"[concat(variables('factoryId'), '/datasets/Svens_History')]",
+				"[concat(variables('factoryId'), '/datasets/ReaderBookInnerJoin')]"
 			]
 		},
 		{
@@ -1658,36 +1801,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/CopyBookCSV')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/TimeTrigger')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Started",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "FileCopypipeline_implicit_mapping",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Minute",
-						"interval": 1,
-						"startTime": "2020-08-31T08:35:00Z",
-						"timeZone": "UTC"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/FileCopypipeline_implicit_mapping')]"
 			]
 		}
 	]

@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "vishwanathdatafactory"
 		},
+		"AzureDatabricksLinkedService_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'AzureDatabricksLinkedService'"
+		},
 		"AzureSqlDatabase1_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AzureSqlDatabase1'"
@@ -56,6 +60,24 @@
 					}
 				},
 				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureDatabricksLinkedService')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDatabricks",
+				"typeProperties": {
+					"domain": "https://adb-2239554580650718.18.azuredatabricks.net",
+					"accessToken": {
+						"type": "SecureString",
+						"value": "[parameters('AzureDatabricksLinkedService_accessToken')]"
+					},
+					"existingClusterId": "0903-045619-guest628"
+				}
 			},
 			"dependsOn": []
 		},
@@ -863,118 +885,6 @@
 						"type": "String"
 					},
 					{
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureStorageLinkService')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ReaderBookInnerJoin')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureStorageLinkService",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"container": "destinationadftutorial"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "770565",
-						"type": "String"
-					},
-					{
-						"name": "The One Minute Manager Meets the Monkey",
-						"type": "String"
-					},
-					{
-						"name": "Kenneth H. Blanchard",
-						"type": "String"
-					},
-					{
-						"name": "Blanchard, Kenneth H.",
-						"type": "String"
-					},
-					{
-						"name": "William Oncken Jr.",
-						"type": "String"
-					},
-					{
-						"name": "0688103804",
-						"type": "String"
-					},
-					{
-						"name": "9780688103804",
-						"type": "String"
-					},
-					{
-						"name": "07",
-						"type": "String"
-					},
-					{
-						"name": "4.04",
-						"type": "String"
-					},
-					{
-						"name": "William Morrow Paperbacks",
-						"type": "String"
-					},
-					{
-						"name": "Paperback",
-						"type": "String"
-					},
-					{
-						"name": "137",
-						"type": "String"
-					},
-					{
-						"name": "198912",
-						"type": "String"
-					},
-					{
-						"name": "198913",
-						"type": "String"
-					},
-					{
-						"name": "Prop_14",
-						"type": "String"
-					},
-					{
-						"name": "26/08/2019",
-						"type": "String"
-					},
-					{
-						"name": "paperback",
-						"type": "String"
-					},
-					{
-						"name": "paperback (#543)",
-						"type": "String"
-					},
-					{
-						"name": "read",
-						"type": "String"
-					},
-					{
-						"name": "Prop_19",
-						"type": "String"
-					},
-					{
-						"name": "020",
 						"type": "String"
 					}
 				]

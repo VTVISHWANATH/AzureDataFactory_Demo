@@ -5,6 +5,9 @@
 		"factoryName": {
 			"value": "vishwanathdatafactory"
 		},
+		"AzureDatabricksLinkedService_accessToken": {
+			"value": ""
+		},
 		"AzureSqlDatabase1_connectionString": {
 			"value": ""
 		},

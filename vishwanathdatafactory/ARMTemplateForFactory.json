@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "vishwanathdatafactory"
 		},
+		"AzureDatabricksLinkedService_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'AzureDatabricksLinkedService'"
+		},
 		"AzureSqlDatabase1_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'AzureSqlDatabase1'"
@@ -699,13 +703,46 @@
 								"parameters": {}
 							}
 						]
+					},
+					{
+						"name": "Notebook1",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "Copy_t8e",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/vtvishwanathbhat@gmail.com/03-Data-Ingestion-Via-ADF/includes/Databricks-Data-Transformations",
+							"baseParameters": {
+								"accountName": "vishwanathstorageaccount",
+								"accountKey": "wFrjC3Z5nbFHXyEZ2ORmokrBZHSH2zZ/XqnBV0/QsNp5uQxvc1OD84KKiyk3QDHFx5ePKP6JmG4AASdkP/MpSg==",
+								"containerName": "dwtemp"
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricksLinkedService",
+							"type": "LinkedServiceReference"
+						}
 					}
 				],
 				"annotations": []
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/SourceDataset_t8e')]",
-				"[concat(variables('factoryId'), '/datasets/DestinationDataset_t8e')]"
+				"[concat(variables('factoryId'), '/datasets/DestinationDataset_t8e')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzureDatabricksLinkedService')]"
 			]
 		},
 		{
@@ -2444,6 +2481,24 @@
 					}
 				},
 				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureDatabricksLinkedService')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDatabricks",
+				"typeProperties": {
+					"domain": "https://adb-2239554580650718.18.azuredatabricks.net",
+					"accessToken": {
+						"type": "SecureString",
+						"value": "[parameters('AzureDatabricksLinkedService_accessToken')]"
+					},
+					"existingClusterId": "0903-045619-guest628"
+				}
 			},
 			"dependsOn": []
 		},
