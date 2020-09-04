@@ -20,7 +20,17 @@
 					"catalogPricingTier": "Basic"
 				},
 				"edition": "Standard",
-				"licenseType": "LicenseIncluded"
+				"licenseType": "LicenseIncluded",
+				"dataProxyProperties": {
+					"connectVia": {
+						"type": "IntegrationRuntimeReference",
+						"referenceName": "SelfHostedIR"
+					},
+					"stagingLinkedService": {
+						"type": "LinkedServiceReference",
+						"referenceName": "AzureStorageLinkService"
+					}
+				}
 			}
 		}
 	}
